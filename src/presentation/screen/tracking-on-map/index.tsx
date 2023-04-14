@@ -48,7 +48,11 @@ import MapViewDirections, {
   MapDirectionsResponse,
 } from "react-native-maps-directions";
 import theme from "../../../../global/styles/theme";
-import { converter, GOOGLE_MAPS_APIKEY } from "../../utils/config";
+import {
+  cleanDistance,
+  converter,
+  GOOGLE_MAPS_APIKEY,
+} from "../../utils/config";
 
 const { height, width } = Dimensions.get("window");
 
@@ -60,6 +64,14 @@ type Params = {
   code: string;
   coords: Coords;
 };
+
+const edgePadding = {
+  right: 50,
+  bottom: 50,
+  left: 50,
+  top: 50,
+};
+
 export default function TrackingOnMap() {
   const [location, setLocation] = useState<LocationObject | null>(null);
   const { goBack } = useNavigation();
@@ -100,16 +112,19 @@ export default function TrackingOnMap() {
   function handleReady(result: MapDirectionsResponse) {
     setDistance(result.distance);
     setDuration(result.duration);
-    console.log(result.duration.toFixed(0));
+
     mapRef.current.fitToCoordinates(result.coordinates, {
-      edgePadding: {
-        right: width / 20,
-        bottom: height / 20,
-        left: width / 20,
-        top: height / 20,
-      },
+      edgePadding,
     });
   }
+
+  useEffect(() => {
+    if (!location?.coords || !params?.coords) return;
+
+    mapRef.current.fitToSuppliedMarkers(["origin", "destination"], {
+      edgePadding,
+    });
+  }, [location?.coords, params?.coords]);
 
   return (
     <Container>
@@ -131,10 +146,12 @@ export default function TrackingOnMap() {
               latitudeDelta: 0.005,
               longitudeDelta: 0.005,
             }}
-            mapType="standard"
+            mapType="mutedStandard"
+            loadingEnabled
+            showsUserLocation
           >
             <MapViewDirections
-              mode="DRIVING"
+              // mode="DRIVING"
               strokeWidth={5}
               strokeColor={theme.colors.primary}
               origin={{
@@ -157,8 +174,18 @@ export default function TrackingOnMap() {
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
               }}
-              title={"User"}
+              title={"Origin"}
               description={"marker.description"}
+              identifier="origin"
+            />
+            <Marker
+              coordinate={{
+                latitude: params?.coords?.lat,
+                longitude: params?.coords?.lng,
+              }}
+              title={"Destination"}
+              description={"marker.description"}
+              identifier="destination"
             />
           </MapViewContent>
         )}
@@ -180,7 +207,7 @@ export default function TrackingOnMap() {
             <TrackTime style={{ marginBottom: 8, fontSize: 16 }}>
               Distância
             </TrackTime>
-            <Code>{distance}km</Code>
+            <Code>{cleanDistance(distance)}km</Code>
           </TrackTimeContainer>
         </TimerTracker>
 
