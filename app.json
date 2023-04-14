@@ -2,6 +2,7 @@
   "expo": {
     "name": "trip-track",
     "slug": "trip-track",
+    "scheme": "trip-track",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/presentation/assets/icon.png",

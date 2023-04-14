@@ -1,4 +1,4 @@
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import { RFValue } from "react-native-responsive-fontsize";
 import styled from "styled-components/native";
 import { RectButton } from "react-native-gesture-handler";
 
@@ -12,7 +12,7 @@ export const Header = styled.View`
   width: 100%;
   height: 40%;
 
-  background-color: ${({ theme }) => theme.colors.primary_dark};
+  background-color: ${({ theme }) => theme.colors.primary_ligth};
 
   justify-content: center;
   align-items: center;
@@ -84,6 +84,7 @@ export const Button = styled(RectButton)`
 `;
 
 export const ImageContainer = styled.View`
+  position: absolute;
   height: 40px;
   width: 40px;
 

@@ -1,7 +1,4 @@
 import React, { useState } from "react";
-import { ActivityIndicator, Platform, Text, View } from "react-native";
-import { RFValue } from "react-native-responsive-fontsize";
-import { useTheme } from "styled-components";
 
 import RoadTrip from "../../assets/map_tracking.svg";
 import GoogleSvg from "../../assets/google.svg";
@@ -19,10 +16,35 @@ import {
   SignUpText,
   ButtonContainer,
 } from "./sign-in-styles";
+import { Alert } from "react-native";
+import { useTheme } from "styled-components";
+import { useAuth } from "../../hooks";
 
-export function SignIn() {
+export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
+  const auth = useAuth();
   const theme = useTheme();
+
+  async function handleSignInWithGoogle() {
+    try {
+      setIsLoading(true);
+      return await auth.signInWithGoogle();
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Não foi possível conetar a conta google");
+      setIsLoading(false);
+    }
+  }
+
+  // async function handleSignInWithApple() {
+  //   try {
+  //     setIsLoading(true);
+  //     return await signInWithApple();
+  //   } catch (error) {
+  //     Alert.alert("Não foi possível conetar a conta apple");
+  //     setIsLoading(false);
+  //   }
+  // }
 
   return (
     <Container>
@@ -38,7 +60,7 @@ export function SignIn() {
         </TitleWrapper>
 
         <ButtonContainer>
-          <Button>
+          <Button onPress={handleSignInWithGoogle}>
             <ImageContainer>
               <GoogleSvg />
             </ImageContainer>
